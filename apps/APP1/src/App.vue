@@ -1,29 +1,33 @@
 <script setup>
+import { appConfig } from '@trs/config'
+import { Button } from '@trs/ui'
+import { subscribeToSSE } from '@trs/utils'
 import HelloWorld from './components/HelloWorld.vue'
-import { appConfig } from '@trs/config';
-import { subscribeToSSE } from '@trs/utils';
-import { Button } from '@trs/ui';
 
-const sub = () => {
+console.log('吊袜带')
+
+function sub() {
   subscribeToSSE('message', (data) => {
-    console.log('Received message:', data);
-  });
+    console.log('Received message:', data)
+  })
 }
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125">
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
     </div>
   </header>
   000
-  {{appConfig('VITE_SSE_URL')}}
+  {{ appConfig('VITE_SSE_URL') }}
   1111
-    <Button @click="sub">订阅</Button>
-    2222
+  <Button @click="sub">
+    订阅
+  </Button>
+  2222
 </template>
 
 <style scoped>

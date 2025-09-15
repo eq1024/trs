@@ -1,0 +1,8 @@
+{
+  "name": "@trs/lint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.0"
+}

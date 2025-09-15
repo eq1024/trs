@@ -4,8 +4,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint",
-    "fix": "turbo run fix"
+    "lint": "turbo run lint -- --fix",
+    "fix": "turbo run fix",
+    "staged": "lint-staged"
   },
   "engines": {
     "node": "22",
@@ -13,6 +14,11 @@
   },
   "devDependencies": {
     "turbo": "latest"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue}": [
+      "turbo run lint -- --fix"
+    ]
   },
   "packageManager": "pnpm@10.15.0"
 }
