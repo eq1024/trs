@@ -71,4 +71,3 @@ pnpm dev
 - `pnpm dev`: 启动所有应用的开发模式。
 - `pnpm build`: 构建所有应用和包。
 - `pnpm lint`: 对整个项目进行代码风格检查。
-- `pnpm clean`: 清理所有 `node_modules` 和构建产物，用于完全重新安装。

@@ -7,6 +7,10 @@
     "lint": "turbo run lint",
     "fix": "turbo run fix"
   },
+  "engines": {
+    "node": "22",
+    "pnpm": "10"
+  },
   "devDependencies": {
     "turbo": "latest"
   },
