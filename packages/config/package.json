@@ -1,0 +1,9 @@
+{
+  "name": "@trs/config",
+  "version": "0.0.0",
+  "main": "./index.js",
+  "types": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  }
+}

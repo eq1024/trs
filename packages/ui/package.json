@@ -1,0 +1,13 @@
+{
+  "name": "@trs/ui",
+  "version": "1.0.0",
+  "main": "./index.js",
+  "types": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "@trs/utils": "workspace:*",
+    "@trs/config": "workspace:*"
+  }
+}
