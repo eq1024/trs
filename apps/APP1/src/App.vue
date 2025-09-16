@@ -4,7 +4,7 @@ import { Button } from '@trs/ui'
 import { subscribeToSSE } from '@trs/utils'
 import HelloWorld from './components/HelloWorld.vue'
 
-console.log('吊袜带')
+console.log('吊袜带22')
 
 function sub() {
   subscribeToSSE('message', (data) => {
