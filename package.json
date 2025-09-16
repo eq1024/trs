@@ -4,11 +4,12 @@
   "scripts": {
     "dev": "turbo run dev",
     "build:dev": "turbo run build:dev",
+    "deploy:dev": "turbo run deploy:dev",
     "build:prod": "turbo run build:prod",
-    "lint": "turbo run lint -- --fix",
-    "fix": "turbo run fix",
-    "sgh": "simple-git-hooks",
-    "staged": "lint-staged"
+    "deploy:prod": "turbo run deploy:prod",
+    "lint": "turbo run lint",
+    "fix": "turbo run lint -- --fix",
+    "sgh": "simple-git-hooks"
   },
   "engines": {
     "node": "22",
@@ -20,7 +21,7 @@
     "simple-git-hooks": "latest"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm staged"
+    "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,vue,json}": "turbo run lint -- --fix"
