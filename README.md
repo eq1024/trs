@@ -51,10 +51,10 @@
 
 ### 2. 任务依赖与缓存 (`turbo.json`)
 
-Turborepo 的核心是 `turbo.json` 中的 `pipeline` 配置。
+Turborepo 的核心是 `turbo.json` 中的 `tasks` 配置。
 
 ```json
-"pipeline": {
+"tasks": {
   "build": {
     "dependsOn": ["^build"],
     "outputs": ["dist/**"]

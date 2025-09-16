@@ -21,13 +21,12 @@ function sub() {
       <HelloWorld msg="You did it!" />
     </div>
   </header>
-  000
-  {{ appConfig('VITE_SSE_URL') }}
-  1111
+
+  这里是环境变量: {{ appConfig('VITE_SSE_URL') }}
+
   <Button @click="sub">
     订阅
   </Button>
-  2222
 </template>
 
 <style scoped>
