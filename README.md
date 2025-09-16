@@ -286,14 +286,54 @@ Turborepo 最强大的功能之一就是能够只在“受影响”的工作空�
     在执行增量命令前，请确保没有未提交的、可能影响所有包的全局文件变更（例如对根 `package.json` 或 `pnpm-lock.yaml` 的修改）。一个“脏”的 `package.json` 会让 `turbo` 认为所有包都受到了影响。
 
 3.  **在命令行中使用过滤器**：
-    *   **部署自 `main` 分支以来的变更** (推荐的通用方式):
-      ```bash
-      pnpm deploy:prod --filter="...[origin/main]"
-      ```
-    *   **部署自上一个 `commit` 以来的变更**:
-      ```bash
-      pnpm deploy:prod --filter="...[HEAD~1]"
-      ```
+    *   **部署特性分支的全部变更 (最推荐)**:
+        在日常开发中，我们通常在特性分支（feature branch）上进行多次提交。当需要部署整个特性分支的变更时，最佳实践是将其与主干分支（如 `main`）进行比较。
+        ```bash
+        # 确保你的 main 分支是远程最新的
+        git fetch origin main
+        
+        # 部署当前分支相较于 main 分支的所有变更
+        pnpm deploy:prod --filter="...[origin/main]"
+        ```
+        这个命令能准确地包含你在特性分支上的所有提交，无论是一个还是多个。
+
+### 场景二：CI/CD 中的自动化统一增量部署
+
+在拥有多个目标环境（如 `dev` 环境对应 `dev` 分支，`prod` 环境对应 `main` 分支）的项目中，我们希望有一个统一的命令逻辑来处理增量部署。
+
+这可以通过结合 CI/CD 平台的环境变量来实现。`git` 命令本身无法自动推断目标分支，但 CI/CD 平台可以告诉我们。
+
+**工作流：**
+
+1.  在 CI/CD 平台（如 GitHub Actions）中，配置一个工作流，让它在代码推送到 `main` 和 `dev` 分支时触发。
+2.  在工作流的执行脚本中，使用平台提供的内置变量（如 `github.ref_name`）来动态构建 `filter` 参数。
+
+**GitHub Actions 示例 (`.github/workflows/deploy.yml`)**
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Environments
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # ... 省略 checkout, setup pnpm, install 等步骤 ...
+
+      - name: Deploy changed apps
+        run: |
+          # ${{ github.ref_name }} 会被 GitHub Actions 自动替换为
+          # 触发流水线的的分支名，即 'main' 或 'dev'。
+          # 这样就实现了用一个命令，自动与正确的目标分支进行比较。
+          pnpm deploy:prod --filter="...[origin/${{ github.ref_name }}]"
+```
+
+通过这种方式，您无需在本地或 CI/CD 中维护多个不同的部署命令，实现了真正的自动化和统一化。
 
 遵循以上步骤，`turbo` 就能够精确地识别出只有 `app1` 发生了变化，并智能地跳过所有与 `app2` 相关的任务。
 
