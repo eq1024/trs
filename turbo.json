@@ -9,6 +9,16 @@
       "dependsOn": ["^build:prod"],
       "outputs": ["dist/**", ".next/**"]
     },
+    "deploy:dev": {
+      "dependsOn": [
+        "build:dev"
+      ]
+    },
+    "deploy:prod": {
+      "dependsOn": [
+        "build:prod"
+      ]
+    },
     "lint": {
       "cache": false
     },
@@ -16,6 +26,9 @@
       "cache": false
     },
     "dev": {
+      "cache": false
+    },
+    "clean": {
       "cache": false
     }
   }

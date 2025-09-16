@@ -11,8 +11,8 @@
     "build:dev": "vite build --mode development",
     "build:prod": "vite build",
     "preview": "vite preview",
-    "deploy:dev": "pnpm build:dev && bash ../../scripts/deploy.sh APP2 dev",
-    "deploy:prod": "pnpm build:prod && bash ../../scripts/deploy.sh APP2 prod",
+    "deploy:dev": "bash ../../scripts/deploy.sh APP2 dev",
+    "deploy:prod": "bash ../../scripts/deploy.sh APP2 prod",
     "lint": "eslint"
   },
   "dependencies": {

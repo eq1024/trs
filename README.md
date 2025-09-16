@@ -72,7 +72,53 @@ Turborepo 的核心是 `turbo.json` 中的 `tasks` 配置。
 - **`pnpm-workspace.yaml`**: 此文件定义了 pnpm 工作空间的范围，告诉 pnpm 在 `apps` 和 `packages` 目录下寻找子项目。
 - **`"workspace:*"` 协议**: 在 `package.json` 中，你会看到类似 `"@trs/ui": "workspace:*"` 的依赖。这是一种 pnpm 的内部协议，它会确保 `app1` 总是引用工作空间内最新版本的 `@trs/ui`，而无需发布到 npm。这使得跨包联调和代码复用变得极其简单。
 
+### 一个重要的陷阱：`dependsOn` 的缺失
+
+这是一个非常容易被忽略但至关重要的配置。理解它能帮你避免在增量部署时遇到困惑。
+
+**问题场景：**
+假设你只修改了 `app1` 的代码，然后运行增量部署命令：
+```bash
+pnpm deploy:prod --filter="...[HEAD~1]"
+```
+你期望的结果是**只有 `app1`** 被构建和部署。
+
+但是，如果你的 `turbo.json` 中 `deploy:prod` 任务是这样配置的（缺少 `dependsOn`）：
+```json
+// turbo.json (错误配置)
+"deploy:prod": {
+  "cache": false
+}
+```
+你会发现，`app1`、`app2` 以及**所有**定义了 `deploy:prod` 脚本的应用都会被执行。
+
+**原因剖析：**
+`--filter` 确实正确地告诉了 `turbo` 变更的“起点”在 `app1`。但由于 `deploy:prod` 任务在 `turbo` 的“任务地图”上是一个孤立的点，`turbo` 不知道这个任务是否依赖于其他包（如 `@trs/ui`）的构建产物。
+
+出于安全考虑，`turbo` 会采取最保守的策略：它会认为所有定义了 `deploy:prod` 脚本的包都可能是相关的，因此在所有这些包中都执行该任务，以防止因缺少潜在的、未声明的依赖而导致部署失败。
+
+**最终的正确配置：**
+
+经过反复调试，我们发现除了 `dependsOn`，还有一个更关键的因素：`"cache": false`。
+
+`"cache": false` 的优先级非常高，它会强制 `turbo` 在所有匹配的包中无条件执行该任务，这使得 `--filter` 的筛选能力失效。
+
+因此，最终的、能让增量部署完美工作的配置是：
+```json
+// turbo.json (最终正确配置)
+"deploy:prod": {
+  "dependsOn": ["build:prod"]
+}
+```
+**不要**添加 `"cache": false`。
+
+这样，`turbo` 才能完全利用它的依赖图和缓存系统：当它发现 `app2` 的 `build:prod` 任务命中缓存（`CACHE HIT`）时，它会顺理成章地将依赖于此的 `app2` 的 `deploy:prod` 任务也标记为缓存命中，从而**真正地跳过**该任务的执行。
+
 ##  快速开始
+
+> **⚠️ 重要原则：始终在根目录执行命令**
+>
+> 在这个 Monorepo 项目中，所有的 `pnpm` 和 `turbo` 命令（如安装依赖、启动服务、构建、部署等）都应该在**项目根目录**下执行。这是确保 pnpm 工作空间和 Turborepo 任务调度正常工作的关键。请不要 `cd` 到子目录（如 `apps/app1`）中去执行这些命令。
 
 **1. 克隆项目**
 
@@ -115,6 +161,23 @@ pnpm dev
 - `pnpm build`: 构建所有应用和包。
 - `pnpm lint`: 对整个项目进行代码风格检查并自动修复。
 
+### 为特定应用/包安装依赖
+
+在 Monorepo 中，你不应该 `cd`到子项目目录去安装依赖。正确的做法是**始终在根目录**，使用 `pnpm` 的 `--filter` 标志来指定目标。
+
+**语法：** `pnpm add <package-name> --filter <app-or-package-name>`
+
+**示例：**
+- **为 `app1` 添加一个新的生产依赖 `axios`**:
+  ```bash
+  pnpm add axios --filter app1
+  ```
+- **为 `@trs/ui` 包添加一个新的开发依赖 `less`**:
+  ```bash
+  pnpm add less -D --filter @trs/ui
+  ```
+`pnpm` 会自动找到对应的 `package.json` 并更新它。
+
 ### 新增项目
 
 当你在 `apps` 目录下添加一个新的子项目时（例如 `APP3`），请遵循以下步骤以确保其正确集成到 Turborepo 工作流中：
@@ -153,8 +216,8 @@ export default defineConfig({
     "build:dev": "vite build --mode development",
     "build:prod": "vite build",
     "preview": "vite preview",
-    "deploy:dev": "pnpm build:dev && bash ../../scripts/deploy.sh APP_NAME dev",
-    "deploy:prod": "pnpm build:prod && bash ../../scripts/deploy.sh APP_NAME prod",
+    "deploy:dev": "node ../../scripts/deploy.js APP_NAME dev",
+    "deploy:prod": "node ../../scripts/deploy.js APP_NAME prod",
     "lint": "eslint"
   },
   "dependencies": {
@@ -199,33 +262,40 @@ pnpm i -D eslint
 ```
 
 
-## 高级用法：增量任务执行
+## 高级用法：增量执行
 
-Turborepo 的核心优势之一是能够只在受变更影响的项目上执行任务，从而极大提升效率。这种“增量执行”的机制在不同场景下有不同的实现方式。
+Turborepo 最强大的功能之一就是能够只在“受影响”的工作空间上执行任务。这通常通过 `--filter` 标志和 Git 历史记录来实现。
 
-### 场景一：CI/CD 中的增量部署 (例如 `deploy`)
+### 场景一：增量构建与部署
 
-在 CI/CD 环境中，我们通常希望只部署那些自上次成功部署以来发生变化的应用。直接运行 `turbo run deploy` 会尝试在所有项目中执行，这并非我们所想。
+**目标**：当我们只修改了 `app1` 时，我们希望只构建和部署 `app1`，而完全跳过 `app2`。
 
-正确的做法是使用 `turbo` 的 `--filter` 标志，并结合 Git 的提交历史来确定范围。
+**最终的正确工作流**：
 
-**工作原理**：我们通过 `--filter` 明确告诉 `turbo` 需要比较的 Git 记录范围。`turbo` 会分析这个范围内的文件变更，找出所有受影响的工作空间（包括直接修改和间接依赖），然后只在这些工作空间上执行指定的任务（如 `deploy`）。
+1.  **确保 `turbo.json` 配置正确**：
+    *   任务之间必须有明确的 `dependsOn` 依赖关系。
+    *   **不要**为需要增量执行的任务（如 `deploy`）设置 `"cache": false`。
+    ```json
+    // turbo.json (正确配置)
+    "deploy:prod": {
+      "dependsOn": ["build:prod"]
+    }
+    ```
 
-**常用命令**：
+2.  **确保 Git 工作区干净**：
+    在执行增量命令前，请确保没有未提交的、可能影响所有包的全局文件变更（例如对根 `package.json` 或 `pnpm-lock.yaml` 的修改）。一个“脏”的 `package.json` 会让 `turbo` 认为所有包都受到了影响。
 
-在 CI/CD 流程中，通常在代码合并到主分支后触发，此时 `HEAD` 指向最新的 commit。
+3.  **在命令行中使用过滤器**：
+    *   **部署自 `main` 分支以来的变更** (推荐的通用方式):
+      ```bash
+      pnpm deploy:prod --filter="...[origin/main]"
+      ```
+    *   **部署自上一个 `commit` 以来的变更**:
+      ```bash
+      pnpm deploy:prod --filter="...[HEAD~1]"
+      ```
 
-- **与上一个 commit 比较（推荐）**:
-  ```bash
-  # 这会部署本次合并所引入的变更
-  turbo run deploy --filter="...[HEAD~1]"
-  ```
-- **使用 CI/CD 平台的环境变量（更精确）**:
-  大多数平台会提供变更前后的 commit SHA，这是最健壮的方式。
-  ```bash
-  # GitHub Actions 示例
-  turbo run deploy --filter="...[$CI_COMMIT_BEFORE_SHA]"
-  ```
+遵循以上步骤，`turbo` 就能够精确地识别出只有 `app1` 发生了变化，并智能地跳过所有与 `app2` 相关的任务。
 
 ### 场景二：本地提交时的增量检查 (例如 `lint`)
 
