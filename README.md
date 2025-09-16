@@ -13,7 +13,8 @@
 - **🔧 可扩展的应用和包**: 在 `apps` 和 `packages` 目录中轻松添加新的应用或共享库。
 - **🌐 环境配置分离**: 通过 `.env` 文件集中管理不同环境（开发、生产）的配置。
 - **🎨 共享 UI 和逻辑**: 内置 `@trs/ui` (共享组件) 和 `@trs/utils` (共享工具函数) 等包，促进代码复用。
-- **💅 统一代码风格**: 通过共享的 `@trs/lint` 包提供一致的 ESLint 配置，确保整个项目的代码质量。
+- **💅 统一代码风格**: 通过共享的 `@trs/lint` 包提供一致的 ESLint 配置。
+- **✅ 自动化代码检查**: 集成 `lint-staged` 和 `simple-git-hooks`，在 `git commit` 时自动对暂存文件进行代码风格检查和修复，从源头保证代码质量。
 - **⚡️ 现代前端框架**: 应用默认使用 [Vue 3](https://vuejs.org/) 和 [Vite](https://vitejs.dev/)，提供极致的开发速度。
 
 ## 📂 项目结构
@@ -39,7 +40,39 @@
 - **`apps`**: 存放各个独立的应用（例如网站、后台管理系统等）。
 - **`packages`**: 存放可被多个 `apps` 共享的代码库（例如公共组件、工具函数、配置等）。
 
-## 🚀 快速开始
+## 💡 核心设计与实践
+
+本模板包含了一些旨在提升开发效率和可维护性的核心设计，理解它们有助于你更好地使用和扩展此项目。
+
+### 1. 环境变量管理
+
+- **集中管理**: 所有的环境变量（如 `VITE_API_URL`）都定义在项目**根目录**的 `.env.development` 和 `.env.production` 文件中。
+- **自动加载**: 每个 `app` 中的 `vite.config.js` 都通过 `envDir: path.resolve(__dirname, '../../')` 配置指向了根目录。这使得 Vite 在启动时能自动加载根目录的 `.env` 文件，实现了环境变量的全局共享，避免了在每个应用中重复配置。
+
+### 2. 任务依赖与缓存 (`turbo.json`)
+
+Turborepo 的核心是 `turbo.json` 中的 `pipeline` 配置。
+
+```json
+"pipeline": {
+  "build": {
+    "dependsOn": ["^build"],
+    "outputs": ["dist/**"]
+  },
+  "lint": {},
+  // ...
+}
+```
+
+- **`dependsOn: ["^build"]`**: `^` 符号是关键。它告诉 Turborepo，在执行某个包的 `build` 任务之前，必须先完成其所有**内部依赖项**（`dependencies` 和 `devDependencies`）的 `build` 任务。例如，`app1` 依赖 `@trs/ui`，那么在构建 `app1` 之前，`turbo` 会确保 `@trs/ui` 已经被成功构建。
+- **`outputs`**: 这个字段告诉 `turbo` 任务的产物存放在哪里。`turbo` 会缓存这些产物。如果下次执行任务时，相关文件和依赖没有发生变化，`turbo` 会直接从缓存中恢复产物，从而实现秒级构建。
+
+### 3. 工作空间与内部依赖
+
+- **`pnpm-workspace.yaml`**: 此文件定义了 pnpm 工作空间的范围，告诉 pnpm 在 `apps` 和 `packages` 目录下寻找子项目。
+- **`"workspace:*"` 协议**: 在 `package.json` 中，你会看到类似 `"@trs/ui": "workspace:*"` 的依赖。这是一种 pnpm 的内部协议，它会确保 `app1` 总是引用工作空间内最新版本的 `@trs/ui`，而无需发布到 npm。这使得跨包联调和代码复用变得极其简单。
+
+##  快速开始
 
 **1. 克隆项目**
 
