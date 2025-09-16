@@ -3,9 +3,11 @@
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build:dev": "turbo run build:dev",
+    "build:prod": "turbo run build:prod",
     "lint": "turbo run lint -- --fix",
     "fix": "turbo run fix",
+    "sgh": "simple-git-hooks",
     "staged": "lint-staged"
   },
   "engines": {
@@ -13,12 +15,15 @@
     "pnpm": "10"
   },
   "devDependencies": {
-    "turbo": "latest"
+    "turbo": "latest",
+    "lint-staged": "latest",
+    "simple-git-hooks": "latest"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm staged"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,vue}": [
-      "turbo run lint -- --fix"
-    ]
+    "*.{js,jsx,ts,tsx,vue,json}": "turbo run lint -- --fix"
   },
   "packageManager": "pnpm@10.15.0"
 }

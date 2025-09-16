@@ -8,8 +8,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "build:prod": "vite build",
     "preview": "vite preview",
+    "deploy:dev": "pnpm build:dev && bash ../../scripts/deploy.sh APP1 dev",
+    "deploy:prod": "pnpm build:prod && bash ../../scripts/deploy.sh APP1 prod",
     "lint": "eslint"
   },
   "dependencies": {

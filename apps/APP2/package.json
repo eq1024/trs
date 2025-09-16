@@ -1,24 +1,30 @@
 {
   "name": "app2",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build:dev": "vite build --mode development",
+    "build:prod": "vite build",
+    "preview": "vite preview",
+    "deploy:dev": "pnpm build:dev && bash ../../scripts/deploy.sh APP2 dev",
+    "deploy:prod": "pnpm build:prod && bash ../../scripts/deploy.sh APP2 prod",
+    "lint": "eslint"
   },
   "dependencies": {
-    "vue": "^3.5.18",
-    "@trs/ui": "workspace:*",
     "@trs/config": "workspace:*",
-    "@trs/utils": "workspace:*"
+    "@trs/lint": "workspace:*",
+    "@trs/ui": "workspace:*",
+    "@trs/utils": "workspace:*",
+    "vue": "^3.5.18"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
+    "eslint": "^9.35.0",
     "vite": "^7.0.6",
     "vite-plugin-vue-devtools": "^8.0.0"
   }
