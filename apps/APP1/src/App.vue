@@ -25,7 +25,7 @@ function sub() {
   这里是环境变量: {{ appConfig('VITE_SSE_URL') }}
 
   <Button @click="sub">
-    订阅SSE
+    订阅SSE测试
   </Button>
 </template>
 
