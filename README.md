@@ -190,6 +190,7 @@ eslint 放弃全局单一eslint.config.mjs
 使用注意:需要项目自身安装`eslint`依赖以及配置lint脚本,并且版本推荐和`@trs/lint`依赖版本一致
 
 ```json
+
 pnpm i -D eslint
 
 "scripts": {
