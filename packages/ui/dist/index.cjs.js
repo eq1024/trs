@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const c=require("vue"),s=(t,e)=>{const n=t.__vccOpts||t;for(const[o,r]of e)n[o]=r;return n},u={};function _(t,e){return c.openBlock(),c.createElementBlock("div",null," 测试按钮 ")}const l=s(u,[["render",_]]);exports.Button=l;

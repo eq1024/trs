@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "deploy:dev": "bash ../../scripts/deploy.sh APP1 dev",
     "deploy:prod": "bash ../../scripts/deploy.sh APP1 prod",
-    "lint": "eslint"
+    "lint": "eslint",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@trs/config": "workspace:*",

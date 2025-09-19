@@ -1,13 +1,33 @@
 {
   "name": "@trs/fetch",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "license": "ISC",
+  "private": true,
   "packageManager": "pnpm@10.15.0",
+  "description": "",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "lint": "eslint",
+    "clean": "rimraf dist"
+  },
   "dependencies": {
-    "axios": "^1.12.2",
     "@trs/config": "workspace:*",
-    "@trs/utils": "workspace:*"
+    "@trs/utils": "workspace:*",
+    "axios": "^1.12.2"
+  },
+  "devDependencies": {
+    "@trs/lint": "workspace:*",
+    "eslint": "^9.35.0",
+    "tsup": "^8.2.3",
+    "typescript": "^5.5.4"
   }
 }

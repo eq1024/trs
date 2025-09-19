@@ -1,13 +1,28 @@
 {
   "name": "@trs/utils",
   "version": "1.0.0",
-  "main": "./index.js",
-  "types": "./index.js",
+  "private": true,
   "exports": {
-    ".": "./index.js"
-  }
-  ,
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.js --format cjs,esm --dts",
+    "lint": "eslint",
+    "clean": "rimraf dist"
+  },
   "dependencies": {
     "@trs/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@trs/lint": "workspace:*",
+    "eslint": "^9.35.0",
+    "tsup": "^8.2.3",
+    "typescript": "^5.5.4"
   }
 }

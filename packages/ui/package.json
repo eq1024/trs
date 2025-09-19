@@ -1,13 +1,33 @@
 {
   "name": "@trs/ui",
   "version": "1.0.0",
-  "main": "./index.js",
-  "types": "./index.js",
+  "private": true,
   "exports": {
-    ".": "./index.js"
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "vite build",
+    "lint": "eslint",
+    "clean": "rimraf dist"
+  },
+  "peerDependencies": {
+    "vue": "^3.4.31"
   },
   "dependencies": {
-    "@trs/utils": "workspace:*",
-    "@trs/config": "workspace:*"
+    "@trs/config": "workspace:*",
+    "@trs/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@trs/lint": "workspace:*",
+    "@vitejs/plugin-vue": "^5.1.2",
+    "eslint": "^9.35.0",
+    "vite": "^5.4.2",
+    "vite-plugin-dts": "^3.9.1"
   }
 }

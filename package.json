@@ -18,7 +18,8 @@
   "devDependencies": {
     "turbo": "latest",
     "lint-staged": "latest",
-    "simple-git-hooks": "latest"
+    "simple-git-hooks": "latest",
+    "rimraf": "^5.0.10"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

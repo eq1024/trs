@@ -1,9 +1,16 @@
 {
   "name": "@trs/config",
   "version": "0.0.0",
-  "main": "./index.js",
-  "types": "./index.js",
+  "private": true,
   "exports": {
     ".": "./index.js"
+  },
+  "main": "./index.js",
+  "scripts": {
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "@trs/lint": "workspace:*",
+    "eslint": "^9.35.0"
   }
 }
