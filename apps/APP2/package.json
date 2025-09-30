@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "deploy:dev": "bash ../../scripts/deploy.sh APP2 dev",
     "deploy:prod": "bash ../../scripts/deploy.sh APP2 prod",
-    "lint": "eslint",
+    "lint": "eslint .",
     "clean": "rimraf dist"
   },
   "dependencies": {

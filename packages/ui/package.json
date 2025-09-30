@@ -13,7 +13,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "vite build",
-    "lint": "eslint",
+    "lint": "eslint .",
     "clean": "rimraf dist"
   },
   "peerDependencies": {
@@ -27,6 +27,7 @@
     "@trs/lint": "workspace:*",
     "@vitejs/plugin-vue": "^5.1.2",
     "eslint": "^9.35.0",
+    "typescript": "^5.5.4",
     "vite": "^5.4.2",
     "vite-plugin-dts": "^3.9.1"
   }

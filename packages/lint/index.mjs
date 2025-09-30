@@ -7,7 +7,7 @@ export default (options = {}, ...userConfigs) => {
   return antfu(
     {
       rules: {
-        'no-console': 'error',
+        'no-console': 'off',
         // 因为ES6的展开语法 相同key会覆盖 所以这里需要深层合并
         ...optionRules,
       },

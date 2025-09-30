@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "turbo run dev",
+    "dev:app1": "turbo run dev --filter=app1",
+    "dev:app2": "turbo run dev --filter=app2",
     "build:dev": "turbo run build:dev",
     "deploy:dev": "turbo run deploy:dev",
     "build:prod": "turbo run build:prod",

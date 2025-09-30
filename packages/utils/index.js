@@ -1,1 +1,0 @@
-export { subscribeToSSE, closeSSEConnection } from './src/sse.js';

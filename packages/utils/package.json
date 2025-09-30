@@ -12,8 +12,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup index.js --format cjs,esm --dts",
-    "lint": "eslint",
+    "build": "tsup index.ts --format cjs,esm --dts",
+    "lint": "eslint .",
     "clean": "rimraf dist"
   },
   "dependencies": {
