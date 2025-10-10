@@ -7,7 +7,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "lint": "eslint"
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@trs/lint": "workspace:*",

@@ -12,12 +12,14 @@
 - **📦 高效包管理**: 使用 [pnpm](https://pnpm.io/) 管理依赖，节省磁盘空间并避免幽灵依赖。
 - **🔧 可扩展的应用和包**: 在 `apps` 和 `packages` 目录中轻松添加新的应用或共享库。
 - **🌐 环境配置分离**: 通过 `.env` 文件集中管理不同环境（开发、生产）的配置。
-- **🎨 共享 UI 和逻辑**: 内置 `@trs/ui` (共享组件) 和 `@trs/utils` (共享工具函数) 等包，促进代码复用。
+- **🛡️ 封装的权限控制**: 内置 `@trs/permission` 包，提供 `v-permission` 指令，可轻松实现前端元素的权限控制。
+- **📡 统一的数据请求**: 内置 `@trs/fetch` 包，基于 `axios` 提供了统一的请求、响应和错误处理，并集成了浏览器指纹功能。
+- **🎨 强类型的共享库**: 核心共享库 `@trs/ui` 和 `@trs/utils` 已完全使用 TypeScript 构建，提供更好的代码提示和类型安全。
 - **💅 统一代码风格**: 通过共享的 `@trs/lint` 包提供一致的 ESLint 配置。
 - **✅ 自动化代码检查**: 集成 `lint-staged` 和 `simple-git-hooks`，在 `git commit` 时自动对暂存文件进行代码风格检查和修复，从源头保证代码质量。
 - **⚡️ 现代前端框架**: 应用默认使用 [Vue 3](https://vuejs.org/) 和 [Vite](https://vitejs.dev/)，提供极致的开发速度。
 
-## 📂 项目结构
+##  项目结构
 
 ```
 .
@@ -25,11 +27,12 @@
 │   ├── APP1/         # 第一个 Vue 应用
 │   └── APP2/         # 第二个 Vue 应用
 ├── packages/
-│   ├── config/       # 共享配置
-│   ├── fetch/        # 共享数据请求模块
-│   ├── lint/         # 共享 ESLint 配置
-│   ├── ui/           # 共享 Vue 组件库
-│   └── utils/        # 共享工具函数
+│   ├── config/       # 共享配置 (JavaScript)
+│   ├── fetch/        # 共享数据请求模块 (TypeScript)
+│   ├── lint/         # 共享 ESLint 配置 (JavaScript)
+│   ├── permission/   # 共享权限控制模块 (TypeScript)
+│   ├── ui/           # 共享 Vue 组件库 (TypeScript)
+│   └── utils/        # 共享工具函数 (TypeScript)
 ├── .env.development  # 开发环境变量
 ├── .env.production   # 生产环境变量
 ├── package.json      # 根 package.json
@@ -71,6 +74,175 @@ Turborepo 的核心是 `turbo.json` 中的 `tasks` 配置。
 
 - **`pnpm-workspace.yaml`**: 此文件定义了 pnpm 工作空间的范围，告诉 pnpm 在 `apps` 和 `packages` 目录下寻找子项目。
 - **`"workspace:*"` 协议**: 在 `package.json` 中，你会看到类似 `"@trs/ui": "workspace:*"` 的依赖。这是一种 pnpm 的内部协议，它会确保 `app1` 总是引用工作空间内最新版本的 `@trs/ui`，而无需发布到 npm。这使得跨包联调和代码复用变得极其简单。
+
+### 4. 权限控制 (`@trs/permission`)
+
+为了在前端实现精细化的元素级别权限控制，项目内置了 `@trs/permission` 包。它提供了一个核心的 Vue 指令：`v-permission`。
+
+**核心功能：**
+
+-   **指令式控制**: 只需在需要控制的 DOM 元素上添加 `v-permission` 指令，即可根据用户权限动态地显示或隐藏该元素。
+-   **与状态管理集成**: 指令与 Pinia 的 `auth` store 自动集成，实时获取当前用户的权限列表。
+-   **支持通配符**: 支持 `*` 通配符，拥有该权限的用户将无视所有限制。
+
+**使用方法：**
+
+1.  **在 `main.js` 中安装指令**:
+    确保你的应用入口文件（如 `apps/APP1/src/main.js`）已经安装了该指令。这一步通常已经为你配置好了。
+    ```javascript
+    import { createApp } from 'vue';
+    import { createPinia } from 'pinia';
+    import { setupPermissionDirective } from '@trs/permission';
+    import { useAuthStore } from './stores/auth';
+    
+    const app = createApp(App);
+    app.use(createPinia());
+
+    // 将 auth store 的 getter 函数传递给指令
+    setupPermissionDirective(app, {
+      getAuthStore: () => useAuthStore(),
+    });
+
+    app.mount('#app');
+    ```
+
+2.  **在组件中使用指令**:
+    在你的 Vue 组件中，直接在需要控制的元素上使用 `v-permission`，并传入所需的权限字符串。
+    ```html
+    <template>
+      <!-- 这个按钮只有在用户拥有 'btn:user:create' 权限时才会显示 -->
+      <button v-permission="'btn:user:create'">
+        Create User
+      </button>
+
+      <!-- 这个区域只有在用户拥有 'page:dashboard:view' 权限时才会显示 -->
+      <div v-permission="'page:dashboard:view'">
+        Dashboard Content...
+      </div>
+    </template>
+    ```
+
+### 5. API 客户端设计模式
+
+为了实现最大程度的解耦和可复用性，项目采用了一种基于工厂函数和依赖注入的 API 客户端设计模式。
+
+**核心理念**:
+
+*   **分离职责**:
+    *   **应用层 (`apps/*`)**: 负责创建和配置 `httpClient` 实例，因为它知道具体的 `baseURL`、`token` 管理方式和 UI 反馈（如 `showError`）。
+    *   **`@trs/fetch` 包**: 提供纯粹的、与具体项目业务无关的 API 函数定义。它不包含任何 `axios` 实例。
+    *   **`@trs/ui` 包**: UI 组件接收一个已经创建好的 `api` 客户端作为 `prop`，并直接调用其方法，无需关心请求是如何被发送的。
+
+**两个核心工厂函数**:
+
+1.  **`createHttpClient(options)`**:
+    *   **输入**: `baseUrl` 和一个包含 `getToken`, `showError` 等应用层具体实现的 `handlers` 对象。
+    *   **输出**: 一个配置了完整拦截器（Token 注入、全局 Loading、统一错误处理等）的 `axios` 实例。
+
+2.  **`createApi(httpClient)`**:
+    *   **输入**: 一个由 `createHttpClient` 创建的 `axios` 实例。
+    *   **输出**: 一个完整的、类型安全的 API 客户端。该客户端聚合了所有在 `packages/fetch/api/` 目录下定义的 API 模块。
+
+**工作流程示例**:
+
+1.  **定义 API (`packages/fetch/api/resource.js`)**:
+    API 模块导出一个接收 `httpClient` 的工厂函数。
+    ```javascript
+    // packages/fetch/api/resource.js
+    export default function createResourceApi(httpClient) {
+      return {
+        getResourceList(page_code, params) {
+          return httpClient({ url: `/resources/${page_code}`, ... });
+        },
+      };
+    }
+    ```
+
+2.  **创建并注入 (`apps/admin/src/main.js` 或组件内)**:
+    在应用层，创建 `httpClient` 和 `api` 客户端。
+    ```javascript
+    // apps/admin/src/main.js (或任何初始化的地方)
+    import { createHttpClient, createApi } from '@trs/fetch';
+    import { getToken } from './stores/auth'; // 应用层的具体实现
+
+    const httpClient = createHttpClient({
+      baseUrl: import.meta.env.VITE_API_BASE_URL,
+      handlers: { getToken }
+    });
+
+    const api = createApi(httpClient);
+
+    // 然后可以将 `api` 注入到整个应用中
+    // app.provide('api', api);
+    ```
+
+3.  **在 UI 组件中使用 (`packages/ui/src/ListPage.vue`)**:
+    UI 组件通过 `props` 接收 `api` 客户端。
+    ```vue
+    <!-- packages/ui/src/ListPage.vue -->
+    <script setup>
+    const props = defineProps({
+      api: { type: Object, required: true }
+    });
+
+    async function fetchData() {
+      // 直接调用，无需关心 httpClient 的实现细节
+      const response = await props.api.getResourceList(...);
+    }
+    </script>
+    ```
+
+这种模式确保了共享包 (`fetch`, `ui`) 的纯粹性和通用性，使得它们可以被任何项目复用，而与项目相关的配置和实现则完全保留在应用层。
+
+**核心功能：**
+
+-   **统一实例创建**: 通过 `createHttpClient` 函数创建一个携带通用拦截器的 `axios` 实例。
+-   **请求拦截器**:
+    -   自动为请求头注入 `Authorization` (Bearer Token)。
+    -   自动为 `GET` 请求添加时间戳以防止缓存。
+    -   自动注入浏览器指纹 (`X-Browser-Fingerprint`)，可用于安全风控。
+-   **响应拦截器**:
+    -   自动处理后端返回的业务错误码（如 `code !== 200`）。
+    -   自动处理 `401` (Token 失效)、`403` (无权限)、`500` (服务器错误) 等 HTTP 状态码。
+    -   成功时自动提取响应体中的 `data` 部分，简化业务代码。
+-   **逻辑解耦**: 通过 `handlers` 参数将具体的实现（如如何获取 Token、如何显示 Loading）与封装本身解耦，使得该包可以被任何框架（Vue, React）或无框架的 JS/TS 项目使用。
+
+**使用方法：**
+
+在你的应用中（例如 `apps/APP1/src/api.ts`），你可以这样使用它来构建你的 API 服务：
+
+```typescript
+import { createHttpClient, createApi } from "@trs/fetch";
+import { useAuthStore } from "@/stores/auth";
+
+// 1. 定义处理器，将 store 的 actions 与 fetch 包解耦
+const handlers = {
+  getToken: () => {
+    const authStore = useAuthStore();
+    return authStore.token;
+  },
+  clearToken: () => {
+    const authStore = useAuthStore();
+    authStore.clearToken();
+  },
+  // ... 其他处理器，如 showLoading, showError 等
+};
+
+// 2. 创建 http 客户端实例
+const httpClient = createHttpClient({
+  baseUrl: import.meta.env.VITE_API_URL, // 从环境变量读取 API 地址
+  handlers,
+});
+
+// 3. 使用 createApi 创建结构化的 API 服务
+const api = createApi(httpClient);
+
+// 4. 在业务代码中调用
+// api.auth.login({ username: 'admin', password: 'password' });
+// api.user.getList();
+
+export default api;
+```
 
 ### 一个重要的陷阱：`dependsOn` 的缺失
 
@@ -223,9 +395,9 @@ export default defineConfig({
     "build:dev": "vite build --mode development",
     "build:prod": "vite build",
     "preview": "vite preview",
-    "deploy:dev": "node ../../scripts/deploy.js APP_NAME dev",
-    "deploy:prod": "node ../../scripts/deploy.js APP_NAME prod",
-    "lint": "eslint"
+    "deploy:dev": "bash ../../scripts/deploy.sh APP_NAME dev",
+    "deploy:prod": "bash ../../scripts/deploy.sh APP_NAME prod",
+    "lint": "eslint ."
   },
   "dependencies": {
     "vue": "^3.5.18",

@@ -1,5 +1,5 @@
 {
-  "name": "@trs/fetch",
+  "name": "@trs/permission",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",
@@ -7,14 +7,11 @@
   "scripts": {
     "lint": "eslint ."
   },
-  "dependencies": {
-    "@fingerprintjs/fingerprintjs": "^4.2.2",
-    "axios": "^1.7.2"
-  },
   "devDependencies": {
     "@trs/lint": "workspace:*",
     "@types/node": "^20.12.12",
     "eslint": "^9.35.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vue": "^3.4.27"
   }
 }
