@@ -1,4 +1,4 @@
-// src/sse.js
+// src/sse.ts
 import { appConfig } from "@trs/config";
 var SSE_URL = appConfig("VITE_SSE_URL") || appConfig("NEXT_PUBLIC_SSE_URL") || "http://localhost:3000/api/sse";
 SSE_URL += "?userID=3";
@@ -41,8 +41,8 @@ function subscribeToSSE(eventName, onMessage) {
     try {
       const data = JSON.parse(event.data);
       onMessage(data);
-    } catch (e) {
-      onMessage(event.data);
+    } catch (error) {
+      onMessage(error || event.data);
     }
   };
   if (!listeners.has(eventName)) {
@@ -59,11 +59,11 @@ function subscribeToSSE(eventName, onMessage) {
     if (listeners.has(eventName)) {
       const currentListenerInfo = listeners.get(eventName);
       currentListenerInfo.handlers.delete(handler);
-      console.log(`Unsubscribed a handler from event "${eventName}".`);
+      console.warn(`Unsubscribed a handler from event "${eventName}".`);
       if (currentListenerInfo.handlers.size === 0) {
         eventSource.removeEventListener(eventName, currentListenerInfo.masterHandler);
         listeners.delete(eventName);
-        console.log(`All handlers for event "${eventName}" have been removed. Event listener detached.`);
+        console.warn(`All handlers for event "${eventName}" have been removed. Event listener detached.`);
       }
     }
   };
@@ -74,10 +74,11 @@ function closeSSEConnection() {
     sseConnection.eventSource.close();
     sseConnection.listeners.clear();
     sseConnection = null;
-    console.log(`Global SSE connection to ${SSE_URL} closed.`);
+    console.warn(`Global SSE connection to ${SSE_URL} closed.`);
   }
 }
 export {
   closeSSEConnection,
   subscribeToSSE
 };
+//# sourceMappingURL=index.mjs.map

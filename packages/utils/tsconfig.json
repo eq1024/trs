@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "composite": true,
     "target": "ESNext",
     "baseUrl": ".",
     "rootDir": "./src",
     "module": "ESNext",
     "moduleResolution": "node",
+    "allowJs": true,
     "strict": true,
     "declaration": true,
     "outDir": "./dist",
