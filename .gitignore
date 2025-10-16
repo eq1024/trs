@@ -8,6 +8,7 @@ node_modules
 # Build outputs
 /dist
 /out
+dist
 
 # IDEs and editors
 /.idea
