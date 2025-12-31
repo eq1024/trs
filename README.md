@@ -18,6 +18,7 @@
 - **💅 统一代码风格**: 通过共享的 `@trs/lint` 包提供一致的 ESLint 配置。
 - **✅ 自动化代码检查**: 集成 `lint-staged` 和 `simple-git-hooks`，在 `git commit` 时自动对暂存文件进行代码风格检查和修复，从源头保证代码质量。
 - **⚡️ 现代前端框架**: 应用默认使用 [Vue 3](https://vuejs.org/) 和 [Vite](https://vitejs.dev/)，提供极致的开发速度。
+- **🌍 国际化支持**: 内置 `@trs/i18n` 包，基于 `vue-i18n` 提供完备的国际化解决方案，支持语言切换和多语言文件管理。
 
 ##  项目结构
 
@@ -30,6 +31,7 @@
 │   ├── config/       # 共享配置 (JavaScript)
 │   ├── fetch/        # 共享数据请求模块 (TypeScript)
 │   ├── lint/         # 共享 ESLint 配置 (JavaScript)
+│   ├── i18n/         # 共享国际化模块 (TypeScript)
 │   ├── permission/   # 共享权限控制模块 (TypeScript)
 │   ├── ui/           # 共享 Vue 组件库 (TypeScript)
 │   └── utils/        # 共享工具函数 (TypeScript)
@@ -45,7 +47,13 @@
 
 ## 💡 核心设计与实践
 
-本模板包含了一些旨在提升开发效率和可维护性的核心设计，理解它们有助于你更好地使用和扩展此项目。
+- 本模板包含了一些旨在提升开发效率和可维护性的核心设计，理解它们有助于你更好地使用和扩展此项目。
+
+- 只做最基础的基建, 其他功能(如:unplugins)都参考共享库的实现方式自由扩展.
+
+## 体验地址
+
+- [APP1 体验地址](https://trs-app-1.vercel.app/)
 
 ## 启动成功
 
@@ -126,7 +134,51 @@ Turborepo 的核心是 `turbo.json` 中的 `tasks` 配置。
     </template>
     ```
 
-### 5. API 客户端设计模式
+### 5. 国际化 (`@trs/i18n`)
+
+项目内置了 `@trs/i18n` 包，旨在提供统一的国际化管理。
+
+**核心功能：**
+
+-   **统一配置**: 封装了 `vue-i18n` 的初始化过程，提供统一的 `setupI18n` 函数。
+-   **语言包管理**: 在 `packages/i18n/locales/` 目录下集中管理所有语言文件（如 `zh-CN.json`, `en-US.json`）。
+-   **易于使用**: 提供了 `useI18n` 钩子，方便在组件中使用。
+
+**使用方法：**
+
+1.  **在 `main.js` 中安装**:
+    ```javascript
+    import { setupI18n } from '@trs/i18n';
+    
+    const app = createApp(App);
+    app.use(setupI18n());
+    ```
+
+2.  **在组件中使用**:
+    ```javascript
+    <script setup>
+    import { useI18n } from '@trs/i18n';
+    
+    // 获取 t 函数和 locale 响应式变量
+    const { t, locale } = useI18n();
+    
+    // 切换语言
+    const toggleLang = () => {
+      locale.value = locale.value === 'zh-CN' ? 'en-US' : 'zh-CN';
+    };
+    </script>
+    
+    <template>
+      <!-- 使用翻译 -->
+      <h1>{{ t('common.welcome') }}</h1>
+      <button @click="toggleLang">Switch Language</button>
+    </template>
+    ```
+
+3.  **添加翻译**:
+    只需修改 `packages/i18n/locales/` 下的 JSON 文件即可。得益于 Monorepo 的结构，修改后所有引用了该包的应用都会自动热更新。
+
+### 6. API 客户端设计模式
 
 为了实现最大程度的解耦和可复用性，项目采用了一种基于工厂函数和依赖注入的 API 客户端设计模式。
 

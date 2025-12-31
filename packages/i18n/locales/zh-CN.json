@@ -4,6 +4,27 @@
     "switchLanguage": "切换语言",
     "currentLanguage": "当前语言: {lang}"
   },
+  "demo": {
+    "title": "TRS 项目 - 验证",
+    "switchLanguage": "切换语言",
+    "currentLanguage": "当前语言: {lang}",
+    "authStatus": "API & 认证状态",
+    "welcome": "欢迎",
+    "guest": "访客",
+    "authenticated": "已认证",
+    "permissions": "权限",
+    "apiCallLog": "API 调用日志",
+    "permissionTest": "权限指令 (v-permission) 测试",
+    "wildcardPermissionDesc": "用户拥有通配符权限 <code>*</code>，因此所有按钮都应可见。",
+    "createUser": "创建用户 (需要 'btn:user:create')",
+    "deleteUser": "删除用户 (需要 'btn:user:delete')",
+    "viewDashboard": "查看仪表盘 (需要 'page:dashboard:view')",
+    "userList": "来自 API 的用户列表",
+    "loginSuccess": "登录成功。已收到令牌。",
+    "profileReceived": "收到个人资料: {username}。权限: {permissions}",
+    "userListReceived": "收到用户列表: {count} 个用户。",
+    "errorOccurred": "发生错误: {error}"
+  },
   "data": {
     "import": "导入数据"
   },

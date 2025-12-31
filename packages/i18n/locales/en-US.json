@@ -4,6 +4,27 @@
     "switchLanguage": "Switch Language",
     "currentLanguage": "Current Language: {lang}"
   },
+  "demo": {
+    "title": "TRS Project - Verification",
+    "switchLanguage": "Switch Language",
+    "currentLanguage": "Current Language: {lang}",
+    "authStatus": "API & Auth Store Status",
+    "welcome": "Welcome",
+    "guest": "Guest",
+    "authenticated": "Authenticated",
+    "permissions": "Permissions",
+    "apiCallLog": "API Call Log",
+    "permissionTest": "Permission Directive (v-permission) Test",
+    "wildcardPermissionDesc": "The user has a wildcard permission <code>*</code>, so all buttons below should be visible.",
+    "createUser": "Create User (requires 'btn:user:create')",
+    "deleteUser": "Delete User (requires 'btn:user:delete')",
+    "viewDashboard": "View Dashboard (requires 'page:dashboard:view')",
+    "userList": "User List from API",
+    "loginSuccess": "Login successful. Token received.",
+    "profileReceived": "Profile received: {username}. Permissions: {permissions}",
+    "userListReceived": "User list received: {count} users.",
+    "errorOccurred": "An error occurred: {error}"
+  },
   "data": {
     "import": "Import Data"
   },

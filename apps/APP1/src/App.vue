@@ -15,21 +15,21 @@ onMounted(async () => {
     // 1. 模拟登录
     const loginData = await api.auth.login({ username: 'admin', password: 'password' })
     authStore.setToken(loginData.token)
-    apiResponse.value += 'Login successful. Token received.\n'
+    apiResponse.value += `${t('demo.loginSuccess')}\n`
 
     // 2. 获取用户信息
     const profile = await api.auth.getProfile()
     authStore.setProfile(profile)
-    apiResponse.value += `Profile received: ${profile.username}. Permissions: ${profile.permissions.join(', ')}\n`
+    apiResponse.value += `${t('demo.profileReceived', { username: profile.username, permissions: profile.permissions.join(', ') })}\n`
 
     // 3. 获取用户列表
     const userList = await api.user.getList()
     users.value = userList
-    apiResponse.value += `User list received: ${userList.length} users.\n`
+    apiResponse.value += `${t('demo.userListReceived', { count: userList.length })}\n`
   }
   catch (error) {
     console.error('Verification failed:', error)
-    apiResponse.value = `An error occurred: ${error.message || 'Unknown error'}`
+    apiResponse.value = t('demo.errorOccurred', { error: error.message || 'Unknown error' })
   }
 })
 </script>
@@ -47,31 +47,31 @@ onMounted(async () => {
     </div>
 
     <div class="card">
-      <h2>API & Auth Store Status</h2>
-      <p>Welcome, <strong>{{ authStore.username || 'Guest' }}</strong></p>
-      <p>Authenticated: <strong>{{ authStore.isAuthenticated }}</strong></p>
-      <p>Permissions: <code>{{ authStore.permissions.join(', ') }}</code></p>
+      <h2>{{ t('demo.authStatus') }}</h2>
+      <p>{{ t('demo.welcome') }}, <strong>{{ authStore.username || t('demo.guest') }}</strong></p>
+      <p>{{ t('demo.authenticated') }}: <strong>{{ authStore.isAuthenticated }}</strong></p>
+      <p>{{ t('demo.permissions') }}: <code>{{ authStore.permissions.join(', ') }}</code></p>
       <hr>
-      <h3>API Call Log:</h3>
+      <h3>{{ t('demo.apiCallLog') }}:</h3>
       <pre>{{ apiResponse }}</pre>
     </div>
 
     <div class="card">
-      <h2>Permission Directive (v-permission) Test</h2>
-      <p>The user has a wildcard permission <code>*</code>, so all buttons below should be visible.</p>
+      <h2>{{ t('demo.permissionTest') }}</h2>
+      <p v-html="t('demo.wildcardPermissionDesc')" />
       <button v-permission="'btn:user:create'">
-        Create User (requires 'btn:user:create')
+        {{ t('demo.createUser') }}
       </button>
       <button v-permission="'btn:user:delete'">
-        Delete User (requires 'btn:user:delete')
+        {{ t('demo.deleteUser') }}
       </button>
       <button v-permission="'page:dashboard:view'">
-        View Dashboard (requires 'page:dashboard:view')
+        {{ t('demo.viewDashboard') }}
       </button>
     </div>
 
     <div class="card">
-      <h2>User List from API</h2>
+      <h2>{{ t('demo.userList') }}</h2>
       <ul>
         <li v-for="user in users" :key="user.id">
           {{ user.username }} ({{ user.email }})

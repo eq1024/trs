@@ -27,3 +27,13 @@ pnpm dev
 ```sh
 pnpm build
 ```
+
+## Internationalization (i18n)
+
+This application uses the shared `@trs/i18n` package for internationalization.
+
+- **Locale Files**: Located in `packages/i18n/locales/`.
+- **Usage**:
+  - The application is wrapped with the i18n provider in `main.js`.
+  - Use `useI18n` composable in components to access `t` function and `locale` property.
+  - A demo of language switching is available in `App.vue`.
