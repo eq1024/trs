@@ -47,6 +47,10 @@
 
 本模板包含了一些旨在提升开发效率和可维护性的核心设计，理解它们有助于你更好地使用和扩展此项目。
 
+## 启动成功
+
+<img width="300" height="auto" alt="image" src="https://github.com/user-attachments/assets/0b129f44-d566-415c-a8d9-d25dc9963e0f" />
+
 ### 1. 环境变量管理
 
 - **集中管理**: 所有的环境变量（如 `VITE_API_URL`）都定义在项目**根目录**的 `.env.development` 和 `.env.production` 文件中。
