@@ -19,6 +19,7 @@
   "dependencies": {
     "@trs/config": "workspace:*",
     "@trs/fetch": "workspace:*",
+    "@trs/i18n": "workspace:*",
     "@trs/lint": "workspace:*",
     "@trs/permission": "workspace:*",
     "@trs/ui": "workspace:*",

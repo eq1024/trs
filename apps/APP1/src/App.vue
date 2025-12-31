@@ -1,8 +1,10 @@
 <script setup>
+import { useI18n } from '@trs/i18n'
 import { onMounted, ref } from 'vue'
 import api from './api'
 import { useAuthStore } from './stores/auth'
 
+const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const users = ref([])
 const apiResponse = ref('')
@@ -34,7 +36,16 @@ onMounted(async () => {
 
 <template>
   <main>
-    <h1>TRS Project - Verification</h1>
+    <h1>{{ t('demo.title') }}</h1>
+
+    <div class="card">
+      <h2>I18n Demo</h2>
+      <p>{{ t('demo.currentLanguage', { lang: locale }) }}</p>
+      <button @click="locale = locale === 'zh-CN' ? 'en-US' : 'zh-CN'">
+        {{ t('demo.switchLanguage') }}
+      </button>
+    </div>
+
     <div class="card">
       <h2>API & Auth Store Status</h2>
       <p>Welcome, <strong>{{ authStore.username || 'Guest' }}</strong></p>

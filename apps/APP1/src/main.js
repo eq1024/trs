@@ -1,3 +1,4 @@
+import { setupI18n } from '@trs/i18n'
 import { setupPermissionDirective } from '@trs/permission'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
@@ -11,7 +12,10 @@ const app = createApp(App)
 // 1. Install Pinia
 app.use(createPinia())
 
-// 2. Install permission directive
+// 2. Install i18n
+app.use(setupI18n())
+
+// 3. Install permission directive
 // We need to provide the getAuthStore function to the directive setup
 setupPermissionDirective(app, {
   getAuthStore: () => useAuthStore(),

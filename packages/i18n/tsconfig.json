@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "strict": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": ["index.ts", "locales/*.json"],
+  "exclude": ["node_modules", "dist"]
+}

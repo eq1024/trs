@@ -1,0 +1,28 @@
+{
+  "name": "@trs/i18n",
+  "version": "1.0.0",
+  "description": "Shared i18n module for the project",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "vue-i18n": "^9.13.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.2.3",
+    "typescript": "^5.5.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
