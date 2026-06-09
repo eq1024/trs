@@ -7,6 +7,9 @@
   "scripts": {
     "lint": "eslint ."
   },
+  "peerDependencies": {
+    "vue": "^3.4.27"
+  },
   "devDependencies": {
     "@trs/lint": "workspace:*",
     "@types/node": "^20.12.12",

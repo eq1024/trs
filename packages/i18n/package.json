@@ -15,12 +15,15 @@
     "build": "tsup",
     "clean": "rimraf dist"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "vue": "^3.4.0",
     "vue-i18n": "^9.13.1"
   },
   "devDependencies": {
     "tsup": "^8.2.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vue": "^3.4.0",
+    "vue-i18n": "^9.13.1"
   },
   "keywords": [],
   "author": "",

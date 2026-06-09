@@ -8,12 +8,15 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@fingerprintjs/fingerprintjs": "^4.2.2",
+    "@fingerprintjs/fingerprintjs": "^4.2.2"
+  },
+  "peerDependencies": {
     "axios": "^1.7.2"
   },
   "devDependencies": {
     "@trs/lint": "workspace:*",
     "@types/node": "^20.12.12",
+    "axios": "^1.7.2",
     "eslint": "^9.35.0",
     "typescript": "^5.4.5"
   }

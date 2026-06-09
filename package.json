@@ -27,7 +27,7 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,vue,json}": "turbo run lint -- --fix"
+    "*.{js,jsx,ts,tsx,vue,json}": "eslint --fix --no-warn-ignored"
   },
   "packageManager": "pnpm@10.15.0"
 }
