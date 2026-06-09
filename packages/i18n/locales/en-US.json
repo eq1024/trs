@@ -2,11 +2,6 @@
   "demo": {
     "title": "TRS Project - Verification",
     "switchLanguage": "Switch Language",
-    "currentLanguage": "Current Language: {lang}"
-  },
-  "demo": {
-    "title": "TRS Project - Verification",
-    "switchLanguage": "Switch Language",
     "currentLanguage": "Current Language: {lang}",
     "authStatus": "API & Auth Store Status",
     "welcome": "Welcome",
