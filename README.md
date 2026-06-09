@@ -127,10 +127,17 @@ const unsubscribe = subscribeToSSE('order:updated', (data) => {
 
 ## 新增应用
 
-1. 在 `apps/` 下创建目录，参考 `APP2` 的最小结构
-2. `vite.config.js` 中配置 `envDir` 指向根目录以共享环境变量
-3. `package.json` 中添加需要的 `@trs/*` 依赖（`workspace:*` 协议）
-4. 根目录执行 `pnpm install`
+```bash
+pnpm create-app
+```
+
+交互式输入应用名称，自动生成完整脚手架：`vite.config.js`、`eslint.config.mjs`、`package.json`、Pinia auth store、i18n 初始化、API 客户端等。是否需要独立环境变量文件也可以在脚本中选择。
+
+生成后启动：
+
+```bash
+pnpm dev --filter=<应用名>
+```
 
 ## 新增共享包
 
