@@ -85,4 +85,171 @@ Turborepo 通过分析 `package.json` 中的 `dependencies` 和 `devDependencies
 
 *   **生产模式 (`pnpm build:prod`)**: 在**生产打包时**，我们**不使用**上述的路径别名。Vite 会回退到标准行为，即遵循 `package` 的 `package.json` 中的 `exports` 字段，去消费 `dist` 目录中**预先构建好**的标准产物。这保证了生产构建的健壮性、确定性，并能利用 Turborepo 的缓存。
 
-**风险提示**: 这种模式的唯一代价是牺牲了“开发/生产环境的完全一致性”。一个存在于 `package` 构建脚本中的 bug，在 `dev` 模式下不会被发现，只会在执行 `build` 时才暴露出来。这需要团队有一定的纪律性，在正式合并代码前执行一次完整的 `build` 来确保一切正常。
+**风险提示**: 这种模式的唯一代价是牺牲了”开发/生产环境的完全一致性”。一个存在于 `package` 构建脚本中的 bug，在 `dev` 模式下不会被发现，只会在执行 `build` 时才暴露出来。这需要团队有一定的纪律性，在正式合并代码前执行一次完整的 `build` 来确保一切正常。
+
+---
+
+## Q9: `turbo.json` 中 `deploy` 任务的 `dependsOn` 陷阱
+
+这是一个非常容易被忽略但至关重要的配置。
+
+**问题场景：**
+假设你只修改了 `app1` 的代码，然后运行增量部署命令：
+
+```bash
+pnpm deploy:prod --filter=”...[HEAD~1]”
+```
+
+你期望只有 `app1` 被构建和部署。但如果 `turbo.json` 中 `deploy:prod` 缺少 `dependsOn`：
+
+```json
+// 错误配置
+“deploy:prod”: {
+  “cache”: false
+}
+```
+
+`app1`、`app2` 以及所有定义了 `deploy:prod` 脚本的应用都会被执行。
+
+**原因：** `--filter` 正确告诉了 `turbo` 变更起点在 `app1`。但 `deploy:prod` 在任务图上是一个孤立的点，`turbo` 不知道它是否依赖其他包的构建产物，于是采取最保守的策略——在所有定义了该脚本的包中执行。
+
+更关键的是 `”cache”: false”` 的优先级非常高，会强制 `turbo` 在所有匹配的包中无条件执行，使 `--filter` 完全失效。
+
+**正确配置：**
+
+```json
+“deploy:prod”: {
+  “dependsOn”: [“build:prod”]
+}
+```
+
+不要添加 `”cache”: false`。这样 `turbo` 才能利用依赖图和缓存系统：当 `app2` 的 `build:prod` 命中缓存时，依赖它的 `deploy:prod` 也会被跳过。
+
+---
+
+## Q10: 增量构建与部署的完整工作流
+
+**确保 `turbo.json` 配置正确**：任务之间必须有明确的 `dependsOn`，且不要为需要增量执行的任务设置 `”cache”: false`。
+
+**确保 Git 工作区干净**：在执行增量命令前，确保没有未提交的全局文件变更（如根 `package.json` 或 `pnpm-lock.yaml`）。一个脏的 `package.json` 会让 `turbo` 认为所有包都受到了影响。
+
+**常用 filter 模式：**
+
+```bash
+# 部署当前分支相较于 main 的所有变更
+git fetch origin main
+pnpm deploy:prod --filter=”...[origin/main]”
+
+# 部署最近一次提交的变更
+pnpm build --filter=”...[HEAD~1]”
+
+# 只构建 app1 及其依赖
+pnpm build --filter=app1
+```
+
+**`build` 和 `deploy` 的行为区别：**
+
+- `pnpm build`（不带 filter）：`turbo` 检查所有包，未变更的命中缓存跳过，符合直觉。
+- `pnpm deploy:prod`（不带 filter）：`deploy` 是有副作用的操作。即使 `build` 命中缓存，`turbo` 仍然可能执行 `deploy` 脚本，因为它无法缓存”部署”这个动作本身。
+
+**结论**：对于 `build` 这种可缓存的任务，可以不带 `--filter`。对于 `deploy` 这种有副作用、需要精确控制范围的任务，必须使用 `--filter`。
+
+---
+
+## Q11: CI/CD 中的统一增量部署
+
+在拥有多个目标环境（如 `dev` 分支 → dev 环境，`main` 分支 → prod 环境）的项目中，可以通过 CI/CD 平台的环境变量实现统一部署逻辑。
+
+**GitHub Actions 示例：**
+
+```yaml
+name: Deploy to Environments
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      # ... setup ...
+
+      - name: Deploy changed apps
+        run: |
+          pnpm deploy:prod --filter=”...[origin/${{ github.ref_name }}]”
+```
+
+`${{ github.ref_name }}` 在 push 到 `main` 时自动替换为 `main`，push 到 `dev` 时为 `dev`，一条命令覆盖所有环境。
+
+---
+
+## Q12: lint-staged 的正确配置
+
+在 Monorepo 中，lint-staged 不应通过 `turbo run lint` 触发。原因是：
+
+- `turbo` 会在所有包中执行，而非仅变更的包
+- 每个包的 lint 脚本写死 `eslint .`，扫描全包而非暂存文件
+
+正确的做法是让 lint-staged 直接调用 eslint：
+
+```json
+// 根 package.json
+“lint-staged”: {
+  “*.{js,jsx,ts,tsx,vue,json}”: “eslint --fix --no-warn-ignored”
+}
+```
+
+ESLint 9 会根据每个文件的路径自动向上查找最近的 `eslint.config.*`，各包的规则差异不会丢失。`--no-warn-ignored` 静默跳过 eslint 不处理的文件类型。
+
+---
+
+## Q13: 环境变量的集中管理
+
+所有环境变量（如 `VITE_SSE_URL`）定义在项目根目录的 `.env.development` 和 `.env.production` 中。
+
+每个 app 的 `vite.config.js` 通过 `envDir` 指向根目录：
+
+```javascript
+export default defineConfig({
+  envDir: path.resolve(__dirname, '../../'),
+});
+```
+
+这样 Vite 启动时自动加载根目录的 `.env` 文件，实现环境变量全局共享，避免在每个应用中重复配置。
+
+---
+
+## Q14: 为什么所有命令都要在根目录执行
+
+在这个 Monorepo 中，所有 `pnpm` 和 `turbo` 命令（安装依赖、启动、构建、部署等）都应在项目根目录执行。这是确保 pnpm 工作空间和 Turborepo 任务调度正常工作的关键。不要 `cd` 到子目录去执行这些命令。
+
+**为特定包安装依赖的正确方式：**
+
+```bash
+# 为 app1 添加生产依赖
+pnpm add axios --filter app1
+
+# 为 @trs/ui 添加开发依赖
+pnpm add less -D --filter @trs/ui
+```
+
+---
+
+## Q15: 工作空间与 `workspace:*` 协议
+
+`pnpm-workspace.yaml` 定义了工作空间范围：
+
+```yaml
+packages:
+  - 'apps/*'
+  - 'packages/*'
+```
+
+`”workspace:*”` 是 pnpm 的内部协议。当你在 `app1` 的 `package.json` 中写 `”@trs/ui”: “workspace:*”` 时，pnpm 会确保它总是引用工作空间内最新版本的 `@trs/ui`，而无需发布到 npm。这使得跨包联调和代码复用极其简单。
+
+Turborepo 通过分析 `package.json` 中的 `dependencies` 和 `devDependencies` 来构建任务依赖图，而不是源码中的 `import` 语句。
