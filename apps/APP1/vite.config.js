@@ -14,12 +14,13 @@ export default defineConfig(({ mode }) => {
     // 指定加载 .env 文件的目录为 monorepo 的根目录
     envDir: path.resolve(__dirname, '../../'),
     resolve: {
+      dedupe: ['vue'],
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
         ...(isDev
           ? {
               '@trs/ui': path.resolve(__dirname, '../../packages/ui/index.ts'),
-              '@trs/utils': path.resolve(__dirname, '../../packages/utils/index.ts'),
+              '@trs/utils': path.resolve(__dirname, '../../packages/utils/src/index.ts'),
               '@trs/fetch': path.resolve(__dirname, '../../packages/fetch/src/index.ts'),
               '@trs/i18n': path.resolve(__dirname, '../../packages/i18n/index.ts'),
             // config 和 lint 包没有 src 入口, 不需要别名

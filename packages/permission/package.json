@@ -8,13 +8,13 @@
     "lint": "eslint ."
   },
   "peerDependencies": {
-    "vue": "^3.4.27"
+    "vue": "^3.5.38"
   },
   "devDependencies": {
     "@trs/lint": "workspace:*",
-    "@types/node": "^20.12.12",
-    "eslint": "^9.35.0",
-    "typescript": "^5.4.5",
-    "vue": "^3.4.27"
+    "@types/node": "^26.0.0",
+    "eslint": "^10.5.0",
+    "typescript": "^6.0.3",
+    "vue": "^3.5.38"
   }
 }

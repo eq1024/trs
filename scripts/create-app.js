@@ -64,13 +64,13 @@ const pkg = {
     '@trs/permission': 'workspace:*',
     '@trs/ui': 'workspace:*',
     '@trs/utils': 'workspace:*',
-    pinia: '^2.1.7',
-    vue: '^3.5.18',
+    pinia: '^3.0.4',
+    vue: '^3.5.38',
   },
   devDependencies: {
-    '@vitejs/plugin-vue': '^6.0.1',
-    eslint: '^9.35.0',
-    vite: '^7.0.6',
+    '@vitejs/plugin-vue': '^6.0.7',
+    eslint: '^10.5.0',
+    vite: '^8.1.0',
   },
 }
 writeFileSync(join(appDir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
@@ -83,7 +83,7 @@ import { resolve } from 'node:path'
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development'
 
-  const envDir = resolve(__dirname, '${useEnv === 'y' ? "." : "../../"}')
+  const envDir = resolve(__dirname, '\${useEnv === 'y' ? "." : "../../"}')
   const rootEnv = loadEnv(mode, resolve(__dirname, '../../'), 'VITE_')
   const ownEnv = loadEnv(mode, envDir, 'VITE_')
 
@@ -91,6 +91,7 @@ export default defineConfig(({ mode }) => {
     plugins: [vue()],
     envDir,
     resolve: {
+      dedupe: ['vue'],
       alias: {
         '@': resolve(__dirname, './src'),
         ...(isDev
