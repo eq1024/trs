@@ -1,5 +1,5 @@
 import { createInterface } from 'node:readline'
-import { mkdirSync, writeFileSync, existsSync, cpSync } from 'node:fs'
+import { mkdirSync, writeFileSync, existsSync, cpSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { execSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'

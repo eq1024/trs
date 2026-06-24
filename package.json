@@ -1,7 +1,12 @@
 {
   "name": "turborepo-starter",
-  "private": true,
   "type": "module",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
   "scripts": {
     "dev": "turbo run dev",
     "dev:app1": "turbo run dev --filter=app1",
@@ -15,21 +20,20 @@
     "sgh": "simple-git-hooks",
     "create-app": "node scripts/create-app.js"
   },
-  "engines": {
-    "node": ">=22",
-    "pnpm": ">=10"
-  },
   "devDependencies": {
-    "turbo": "latest",
+    "@trs/lint": "workspace:*",
+    "eslint": "10.5.0",
     "lint-staged": "latest",
+    "rimraf": "^6.1.3",
     "simple-git-hooks": "latest",
-    "rimraf": "^6.1.3"
+    "turbo": "latest"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,vue,json}": "eslint --fix --no-warn-ignored"
-  },
-  "packageManager": "pnpm@11.9.0"
+    "**/{apps,packages}/*/src/**/*.{js,jsx,ts,tsx,vue}": "eslint --fix --no-warn-ignored",
+    "**/{apps,packages}/*/*.{js,ts,mjs,json}": "eslint --fix --no-warn-ignored",
+    "./*.{js,jsx,ts,tsx,mjs,json}": "eslint --fix --no-warn-ignored"
+  }
 }

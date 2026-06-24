@@ -1,5 +1,5 @@
 {
   "buildCommand": "pnpm turbo run build:prod --filter=app1",
-  "outputDirectory": "apps/APP1/dist",
-  "installCommand": "pnpm install"
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install --frozen-lockfile"
 }

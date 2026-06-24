@@ -1,20 +1,34 @@
 {
   "name": "@trs/fetch",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "description": "",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "lint": "eslint ."
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "lint": "eslint",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^5.2.0",
+    "@trs/config": "workspace:*",
+    "@trs/utils": "workspace:*",
     "axios": "^1.18.1"
   },
   "devDependencies": {
     "@trs/lint": "workspace:*",
     "@types/node": "^26.0.0",
     "eslint": "^10.5.0",
+    "tsup": "^8.5.1",
     "typescript": "^6.0.3"
   }
 }

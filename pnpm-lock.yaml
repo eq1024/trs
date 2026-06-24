@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      '@trs/lint':
+        specifier: workspace:*
+        version: link:packages/lint
+      eslint:
+        specifier: 10.5.0
+        version: 10.5.0
       lint-staged:
         specifier: latest
         version: 17.0.8
@@ -109,6 +115,12 @@ importers:
       '@fingerprintjs/fingerprintjs':
         specifier: ^5.2.0
         version: 5.2.0
+      '@trs/config':
+        specifier: workspace:*
+        version: link:../config
+      '@trs/utils':
+        specifier: workspace:*
+        version: link:../utils
       axios:
         specifier: ^1.18.1
         version: 1.18.1
@@ -122,6 +134,9 @@ importers:
       eslint:
         specifier: ^10.5.0
         version: 10.5.0
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@microsoft/api-extractor@7.43.0(@types/node@26.0.0))(postcss@8.5.15)(typescript@6.0.3)(yaml@2.9.0)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -635,10 +650,6 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
-
-  '@eslint-community/regexpp@4.12.1':
-    resolution: {integrity: sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==}
-    engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
   '@eslint-community/regexpp@4.12.2':
     resolution: {integrity: sha512-EriSTlt5OC9/7SXkRSCAhfSxxoSUgBm33OH+IkwbdpgoqsSsUg7y3uh+IICI/Qg4BBWr3U2i39RpmycbxMq4ew==}
@@ -3601,8 +3612,6 @@ snapshots:
       eslint: 10.5.0
       eslint-visitor-keys: 3.4.3
 
-  '@eslint-community/regexpp@4.12.1': {}
-
   '@eslint-community/regexpp@4.12.2': {}
 
   '@eslint/compat@2.1.0(eslint@10.5.0)':
@@ -4638,7 +4647,7 @@ snapshots:
   eslint-plugin-es-x@7.8.0(eslint@10.5.0):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
-      '@eslint-community/regexpp': 4.12.1
+      '@eslint-community/regexpp': 4.12.2
       eslint: 10.5.0
       eslint-compat-utils: 0.5.1(eslint@10.5.0)
 
@@ -4721,7 +4730,7 @@ snapshots:
   eslint-plugin-regexp@3.1.0(eslint@10.5.0):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
-      '@eslint-community/regexpp': 4.12.1
+      '@eslint-community/regexpp': 4.12.2
       comment-parser: 1.4.7
       eslint: 10.5.0
       jsdoc-type-pratt-parser: 7.2.0
@@ -4911,7 +4920,7 @@ snapshots:
 
   fix-dts-default-cjs-exports@1.0.1:
     dependencies:
-      magic-string: 0.30.19
+      magic-string: 0.30.21
       mlly: 1.8.2
       rollup: 4.62.2
 
@@ -5792,11 +5801,11 @@ snapshots:
 
   refa@0.12.1:
     dependencies:
-      '@eslint-community/regexpp': 4.12.1
+      '@eslint-community/regexpp': 4.12.2
 
   regexp-ast-analysis@0.7.1:
     dependencies:
-      '@eslint-community/regexpp': 4.12.1
+      '@eslint-community/regexpp': 4.12.2
       refa: 0.12.1
 
   regexp-tree@0.1.27: {}
@@ -5893,7 +5902,7 @@ snapshots:
 
   scslre@0.3.0:
     dependencies:
-      '@eslint-community/regexpp': 4.12.1
+      '@eslint-community/regexpp': 4.12.2
       refa: 0.12.1
       regexp-ast-analysis: 0.7.1
 
