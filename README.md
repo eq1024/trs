@@ -1,5 +1,8 @@
 # turborepo-starter
 
+<img width="1416" height="965" alt="PixPin_2026-06-24_16-56-22" src="https://github.com/user-attachments/assets/15c53781-6b1f-4e21-bbc3-7423f67b2ae2" />
+
+
 Vue 3 + Vite + TypeScript Monorepo 启动模板，基于 pnpm + Turborepo。
 
 [![Powered by Turborepo](https://img.shields.io/badge/powered_by-Turborepo-blue?style=flat&logo=turborepo)](https://turbo.build/)
