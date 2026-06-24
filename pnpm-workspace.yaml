@@ -4,3 +4,7 @@ packages:
 
 minimumReleaseAgeExclude:
   - vite@8.1.0
+
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: true
