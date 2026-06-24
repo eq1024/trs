@@ -11,14 +11,14 @@ Vue 3 + Vite + TypeScript Monorepo 启动模板，基于 pnpm + Turborepo。
 | 类别 | 选型 |
 |------|------|
 | 框架 | Vue 3.5 (Composition API + `<script setup>`) |
-| 构建 | Vite 7 (apps) / tsup 8 (packages) |
-| 包管理 | pnpm 10 + workspace |
+| 构建 | Vite 8 (apps) / tsup 8 (packages) |
+| 包管理 | pnpm 11 + workspace |
 | 任务编排 | Turborepo |
-| 状态管理 | Pinia 2 |
+| 状态管理 | Pinia 3 |
 | HTTP 客户端 | Axios (封装于 `@trs/fetch`) |
-| 国际化 | vue-i18n 9 |
-| 代码规范 | ESLint 9 + @antfu/eslint-config |
-| 类型检查 | TypeScript 5.5 |
+| 国际化 | vue-i18n 11 |
+| 代码规范 | ESLint 10 + @antfu/eslint-config |
+| 类型检查 | TypeScript 6.0 |
 
 ## 项目结构
 
@@ -143,7 +143,7 @@ pnpm dev --filter=<应用名>
 
 1. 在 `packages/` 下创建目录
 2. TS 包使用 `tsup` 构建，Vue 组件包使用 `vite` 库模式
-3. 外部框架依赖（vue / pinia / axios / vue-i18n）设为 `peerDependencies`，内部 `@trs/*` 包用 `dependencies`
+3. 宿主环境依赖（如 `vue`）设为 `peerDependencies`，而包内部的底层网络或国际化工具依赖（如 `axios`、`vue-i18n`）声明在 `dependencies` 中以便消费端开箱即用，内部 `@trs/*` 包用 `dependencies`
 4. 在 `turbo.json` 中视需要添加对应 task
 
 ## 更多

@@ -2,9 +2,5 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-onlyBuiltDependencies:
-  - esbuild
-  - simple-git-hooks
-
 minimumReleaseAgeExclude:
   - vite@8.1.0

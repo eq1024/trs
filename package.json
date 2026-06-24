@@ -16,7 +16,7 @@
     "create-app": "node scripts/create-app.js"
   },
   "engines": {
-    "node": "22.x",
+    "node": ">=22",
     "pnpm": ">=10"
   },
   "devDependencies": {
